@@ -9,7 +9,7 @@ const login = async(req, res = response) => {
     try {
         const { email } = await googleVerify(googleToken);
 
-        await getUserByEmail(email, (err, user) => {
+         getUserByEmail(email, (err, user) => {
             if (err) {
                 console.log(err)
                 return res.status(404).json({ ok: false, msg: 'Usuario no encontrado en la base' });
