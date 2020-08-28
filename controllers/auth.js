@@ -1,23 +1,27 @@
 const {response} = require('express');
 const { googleVerify } = require('../helpers/google-verify');
 const { getUserByEmail } = require('../helpers/findUser');
+var jwt = require('jsonwebtoken');
 
 const login = async(req, res = response) => {
     const googleToken = req.body.token;
 
     try {
-
         const { email } = await googleVerify(googleToken);
 
-        getUserByEmail(email, (err, user) => {
+        await getUserByEmail(email, (err, user) => {
             if (err) {
-                return console.log(err);
+                console.log(err)
+                return res.status(404).json({ ok: false, msg: 'Usuario no encontrado en la base' });
             } 
             else {
+                const id = user[0].id;
+                const token = jwt.sign({id: id}, process.env.SEED,{ expiresIn: '12h' } );                
                 res.json({
                     ok: true,
-                    msg: 'login works!',
-                    user
+                    msg: 'login works!', 
+                    token  ,
+                    user                                    
                 });
             }
         });
