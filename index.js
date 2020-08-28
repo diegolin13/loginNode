@@ -11,6 +11,7 @@ app.use(cors());
 // Configuración y parseo del body en las peticiones
 app.use(express.json());
 
+
 //Directorio publico
 app.use(express.static('public'));
 

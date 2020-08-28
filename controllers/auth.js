@@ -1,20 +1,27 @@
 const {response} = require('express');
 const { googleVerify } = require('../helpers/google-verify');
+const { getUserByEmail } = require('../helpers/findUser');
 
 const login = async(req, res = response) => {
     const googleToken = req.body.token;
 
     try {
 
-        const { name, email, picture } = await googleVerify(googleToken);
-        
-        res.json({
-            ok: true,
-            msg: 'login works!',
-            name,
-            picture,
-            email
+        const { email } = await googleVerify(googleToken);
+
+        getUserByEmail(email, (err, user) => {
+            if (err) {
+                return console.log(err);
+            } 
+            else {
+                res.json({
+                    ok: true,
+                    msg: 'login works!',
+                    user
+                });
+            }
         });
+
     } catch (error) {
         res.status(401).json({
             ok: false,
@@ -24,23 +31,7 @@ const login = async(req, res = response) => {
 
 }
 
-const test = (req, res) => {
-    try {
-        res.json({
-            ok: true,
-            msg: 'test login works'
-        });
-    } catch (error) {
-        console.log(error);
-      return  res.status(500).json({
-            ok: false,
-            msg: 'Unexpected error'
-        });
-        
-    }
-}
 
 module.exports = {
-    login,
-    test
+    login
 }
